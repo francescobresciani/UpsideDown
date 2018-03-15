@@ -1,0 +1,23 @@
+
+ Created by Roberto Trapletti on 15.03.18.
+
+
+ UPSIDEDOWN_TQUEUE_H
+ UPSIDEDOWN_TQUEUE_H
+ TQueueNode;
+ typedef struct TQueueNode* TQueue;
+
+ /* Adds a new element at the end of the list, returns its position */
+ unsigned long int tqueue_enqueue(TQueue* q, void* data);
+
+ /* Removes and returns the element at the beginning of the list, NULL if the
+ is empty */
+ void* tqueue_pop(TQueue* q);
+
+ /* Returns the number of elements in the list */
+ unsigned long int tqueue_size(TQueue q);
+
+ /* Returns a 'view' on the list starting at (a positive) offset distance,
+ * NULL if the queue is empty */
+ TQueue tqueue_at_offset(TQueue q, unsigned long int offset);
+ //UPSIDEDOWN_TQUEUE_H
