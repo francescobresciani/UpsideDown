@@ -10,20 +10,20 @@
 unsigned long int tqueue_enqueue(TQueue* q, void* data){
 
     if(q==NULL){
-        q->data = data;
-        q->next = q;
+        (*q)->data = data;
+        (*q)->next = q;
         return 0;
     }else{
         int pos = 0;
         TQueueNode* newNode = (TQueueNode*) malloc(sizeof(TQueueNode));
         newNode->next = q;
 
-        while(q->next != q){
-            q = q->next;
+        while((*q)->next != q){
+            q = (*q)->next;
             pos++;
         }
 
-        q->next = newNode;
+        (*q)->next = newNode;
         return pos++;
     }
 }
@@ -33,9 +33,9 @@ void* tqueue_pop(TQueue* q){
         return NULL;
     }else{
         void* data = malloc(sizeof(void*));
-        data = q->data;
-        if(q->next != q){
-            q = q->next;
+        data = (*q)->data;
+        if((*q)->next != q){
+            q = (*q)->next;
             return data;
         }else{
             q = NULL;
@@ -46,6 +46,7 @@ void* tqueue_pop(TQueue* q){
 
 /* Returns the number of elements in the list */
 unsigned long int tqueue_size(TQueue q){
+    int pos =0;
     if(q = NULL){
         return 0;
     }else{
