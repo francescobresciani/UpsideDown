@@ -5,11 +5,6 @@
 #ifndef UPSIDEDOWN_TQUEUE_H
 #define UPSIDEDOWN_TQUEUE_H
 
-typedef struct TQueueNode {
-     struct TQueueNode* next;
-     void* data;
-     } TQueueNode;
-
 struct TQueueNode;
 typedef struct TQueueNode* TQueue;
 

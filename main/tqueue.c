@@ -6,6 +6,11 @@
 #include <stdlib.h>
 #include "tqueue.h";
 
+typedef struct TQueueNode {
+    struct TQueueNode* next;
+    void* data;
+} TQueueNode;
+
 /* Adds a new element at the end of the list, returns its position */
 unsigned long int tqueue_enqueue(TQueue* q, void* data){
 
