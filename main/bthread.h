@@ -14,6 +14,17 @@ typedef unsigned long int bthread_t;
 typedef enum { __BTHREAD_EXITED = 0, __BTHREAD_ZOMBIE, __BTHREAD_UNINITIALIZED,
     __BTHREAD_READY, __BTHREAD_BLOCKED, __BTHREAD_SLEEPING } bthread_state;
 
+ typedef struct {
+    bthread_t tid;
+    bthread_routine body;
+    void* arg;
+    bthread_state state;
+    const bthread_attr_t *attr;
+    jmp_buf context;
+    void* retval;
+     } __bthread_private;
+
+
 typedef struct {
     TQueue queue;
     TQueue current_item;
