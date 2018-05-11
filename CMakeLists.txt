@@ -3,4 +3,4 @@ project(upsideDown)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(threader main/bthread_private.h main/bthread.h main/tqueue.c main/tqueue.h test/tqueue_test.c)
+add_executable(threader main/bthread_private.h main/bthread.h main/tqueue.c main/tqueue.h test/tqueue_test.c main/bthread.c)
