@@ -7,14 +7,6 @@
 #include "../main/tqueue.h"
 
 
-//
-// Created by Roberto Trapletti on 15.03.18.
-//
-
-#include <assert.h>
-#include "../main/tqueue.h"
-
-
 void tqueue_pop_test(){
     printf("inizio di tqueue_pop_test -> ");
     TQueue q = NULL;
