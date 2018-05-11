@@ -40,25 +40,28 @@ void tqueue_size_and_enqueue_test(){
 
 };
 
-void tqueue_at_offset_test(){  //TODO finire
+void tqueue_at_offset_and_t_queue_at_offset_test(){
+
+    printf("inizio  di tqueue_at_offset_and_t_queue_at_offset_test -> ");
     TQueue q = NULL;
     unsigned long int offset = 2;
 
-    for (int i=0;i<3;i++){
+    for (int i=0;i<5;i++){
         tqueue_enqueue(&q,(void*) i);
     }
 
 
+    for (int i=0;i<5;i++){
+        TQueue currentNode = tqueue_at_offset(&q,i);
+        assert((int)tqueue_get_data(&currentNode)==i);
 
-
+    }
+    printf("fine di tqueue_at_offset_and_t_queue_at_offset_test\n");
 }
 
-/* Returns the data on the first node of the given list */
-void tqueue_get_data_test(){
-//    TQueue q
-}
 
 int main(){
     tqueue_size_and_enqueue_test();
     tqueue_pop_test();
+    tqueue_at_offset_and_t_queue_at_offset_test();
 }
