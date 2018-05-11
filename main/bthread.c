@@ -33,7 +33,7 @@ int bthread_join(bthread_t bthread, void **retval){
 __bthread_scheduler_private* bthread_get_scheduler(){
 
     static __bthread_scheduler_private * ourScheduler = NULL;
-    if(ourScheduler != NULL){
+    if(ourScheduler == NULL){
         ourScheduler = malloc(sizeof(__bthread_scheduler_private));
     }
     return ourScheduler;
