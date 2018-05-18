@@ -3,6 +3,7 @@
 //
 
 #include "bthread.h"
+#include "bthread_private.h"
 
 int bthread_reap_if_zombie(bthread_t bthread, void **retval);
 
@@ -72,14 +73,22 @@ __bthread_scheduler_private* bthread_get_scheduler(){
 
 void bthread_yield(){
 //    Saves the thread context and then
-//      checks whether the thread that follows in the queue is in the
-//    __BTHREAD_UNINITIALIZED state: if so, a cushion frame is created and the corresponding thread routine is called,
+//      checks whether the thread that follows in the queue is in the __BTHREAD_UNINITIALIZED state:
+//      if so, a cushion frame is created and the corresponding thread routine is called,
 //    otherwise bthread_yield restores (long-jumps to) the scheduler context. Saving the thread context is achieved using sigsetjmp,
 //    which is similar to setjmp but can also save the signal mask if the provided additional parameter is not zero (to restore both
 //    the context and the signal mask the corresponding call is siglongjmp). Saving and restoring the signal mask is required for implementing preemption.
 
-    save_context()
+    __bthread_scheduler_private* scheduler = bthread_get_scheduler();
+    __bthread_private* current =(__bthread_private*) scheduler->current_item;
+    save_context(current->context);
 
+    __bthread_private* next = tqueue_at_offset(scheduler->queue,1);
+    if(next->state==__BTHREAD_UNINITIALIZED){
+        bthread_create_cushion(next);
+    }else{
+        restore_context(scheduler->context);
+    }
 
 
 }

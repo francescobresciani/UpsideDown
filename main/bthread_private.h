@@ -8,10 +8,6 @@
 typedef struct {
 } bthread_attr_t;
 
-
-typedef struct {
-} bthread_attr_t;
-
 typedef void *(*bthread_routine) (void* );
 
 typedef unsigned long int bthread_t;
@@ -37,18 +33,6 @@ typedef struct {
 } __bthread_scheduler_private;
 
 typedef void *(*bthread_routine) (void* );
-
-typedef struct {
-    bthread_t tid;
-    bthread_routine body;
-    void* arg;
-    bthread_state state;
-    bthread_attr_t attr;
-    jmp_buf context;
-    void* retval;
-} __bthread_private;
-
-
 
 __bthread_scheduler_private* bthread_get_scheduler();
 static void bthread_initialize_next();
