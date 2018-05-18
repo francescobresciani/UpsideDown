@@ -41,10 +41,15 @@ __bthread_scheduler_private* bthread_get_scheduler(){
 
 void bthread_yield(){
 
+
 }
 
 void bthread_exit(void *retval){
-
+    __bthread_scheduler_private* scheduler = bthread_get_scheduler();
+    __bthread_private* current = (__bthread_private*) tqueue_get_data(scheduler->current_item);
+    current->retval = retval;
+    current->state = __BTHREAD_ZOMBIE;
+    bthread_yield();
 }
 
 void bthread_cleanup(){
