@@ -51,6 +51,10 @@ void tqueue_at_offset_and_t_queue_at_offset_test(){
     printf("fine di tqueue_at_offset_and_t_queue_at_offset_test\n");
 }
 
+void yield_test(){
+
+}
+
 
 /*int main(){
     tqueue_size_and_enqueue_test();
