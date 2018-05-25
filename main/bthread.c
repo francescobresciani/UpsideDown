@@ -24,7 +24,8 @@ int bthread_create(bthread_t *bthread, const bthread_attr_t *attr, void *(*start
         newBthread->attr =  attr;
     }
 
-    newBthread->tid = tqueue_enqueue(scheduler->queue, newBthread);
+    newBthread->tid = tqueue_enqueue(&scheduler->queue, newBthread);
+    scheduler->current_item = scheduler->queue;
     *bthread = newBthread->tid;
 
     return newBthread->tid;
@@ -67,6 +68,7 @@ __bthread_scheduler_private* bthread_get_scheduler(){
     static __bthread_scheduler_private * ourScheduler = NULL;
     if(ourScheduler == NULL){
         ourScheduler = malloc(sizeof(__bthread_scheduler_private));
+        ourScheduler->queue = NULL;
     }
     return ourScheduler;
 };
