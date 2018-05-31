@@ -22,7 +22,8 @@ int bthread_cancel(bthread_t bthread);
 void bthread_testcancel(void);
 void bthread_sleep(double ms);
 void bthread_printf(const char* format, ...);
-
+void bthread_testcancel(void);
+int bthread_cancel(bthread_t bthread);
 
 
 #endif //SUPSI_SO_18_BTHREAD_H

@@ -7,7 +7,7 @@
 #define save_context(CONTEXT) setjmp(CONTEXT)
 #define restore_context(CONTEXT) longjmp(CONTEXT, 1)
 #define CUSHION_SIZE 10000
-#define QUANTUM_USEC 2000
+#define QUANTUM_USEC 2000000
 
 typedef enum { __BTHREAD_EXITED = 0, __BTHREAD_ZOMBIE, __BTHREAD_UNINITIALIZED,
     __BTHREAD_READY, __BTHREAD_BLOCKED, __BTHREAD_SLEEPING } bthread_state;
