@@ -31,6 +31,7 @@ typedef struct {
     bthread_attr_t attr;
     jmp_buf context;
     void* retval;
+    double wake_up_time;
 } __bthread_private;
 
 __bthread_scheduler_private* bthread_get_scheduler();
@@ -38,5 +39,7 @@ void bthread_cleanup();
 static void bthread_create_cushion(__bthread_private* t_data);
 static void bthread_initialize_next();
 static int bthread_reap_if_zombie(bthread_t bthread, void **retval);
+
+double get_current_time_millis();
 
 #endif //SUPSI_SO_18_BTHREAD_PRIVATE_H

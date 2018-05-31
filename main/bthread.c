@@ -7,6 +7,7 @@
 
 #include "bthread.h"
 #include "bthread_private.h"
+#include <sys/time.h>
 
 __bthread_scheduler_private *bthread_get_scheduler() {
     static __bthread_scheduler_private * ourScheduler = NULL;
@@ -42,6 +43,14 @@ int bthread_join(bthread_t bthread, void **retval) {
             if (bthread_reap_if_zombie(bthread, retval)) return 0;
             scheduler->current_item = tqueue_at_offset(scheduler->current_item, 1);
             tp = (__bthread_private*) tqueue_get_data(scheduler->current_item);
+            volatile __bthread_private * thread = tqueue_get_data(scheduler->current_item);
+            //thread sleep implementation
+            if (thread->state == __BTHREAD_SLEEPING) {
+                printf("Time: %d - %d", thread->wake_up_time, get_current_time_millis());
+                if (thread->wake_up_time == get_current_time_millis()) {
+                    thread->state = __BTHREAD_READY;
+                }
+            }
         } while (tp->state != __BTHREAD_READY);
         restore_context(tp->context);
     }
@@ -100,4 +109,18 @@ static int bthread_reap_if_zombie(bthread_t bthread, void **retval){
 
 void bthread_cleanup(){
 
+}
+
+void bthread_sleep (double ms) {
+    volatile __bthread_scheduler_private* scheduler = bthread_get_scheduler();
+    __bthread_private * thread = tqueue_get_data(scheduler->current_item);
+    thread->state = __BTHREAD_SLEEPING;
+    thread->wake_up_time = ms;
+    bthread_yield();
+}
+
+double get_current_time_millis() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
 }
