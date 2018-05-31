@@ -1,13 +1,13 @@
 //
 // Created by Andrea De Carlo on 04.05.18.
 //
-
-#include "bthread.h"
-#include "bthread_private.h"
-
 #include "bthread.h"
 #include "bthread_private.h"
 #include <sys/time.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <signal.h>
 
 __bthread_scheduler_private *bthread_get_scheduler() {
     static __bthread_scheduler_private * ourScheduler = NULL;
@@ -59,6 +59,8 @@ int bthread_join(bthread_t bthread, void **retval) {
 void bthread_yield() {
     volatile __bthread_scheduler_private *scheduler = bthread_get_scheduler();
     volatile __bthread_private * thread = tqueue_get_data(scheduler->current_item);
+
+    bthread_setup_timer();
 
     if (!save_context(thread->context)) {
         bthread_initialize_next();
@@ -142,4 +144,36 @@ double get_current_time_millis() {
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
+}
+
+static void bthread_setup_timer() {
+    static bool initialized = false;
+
+    if (!initialized) {
+        signal(SIGVTALRM, (void (*)()) bthread_yield);
+        struct itimerval time;
+        time.it_interval.tv_sec = 0;
+        time.it_interval.tv_usec = QUANTUM_USEC;
+        time.it_value.tv_sec = 0;
+        time.it_value.tv_usec = QUANTUM_USEC;
+        initialized = true;
+        setitimer(ITIMER_VIRTUAL, &time, NULL);   ///se non funziona usare ITIMER_REAL
+    }
+}
+
+void bthread_block_timer_signal(){
+
+}
+
+void bthread_unblock_timer_signal(){
+
+}
+
+void bthread_printf(const char* format, ...){
+    bthread_block_timer_signal();
+    va_list args;
+    va_start (args, format);
+    vprintf (format, args);
+    va_end (args);
+    bthread_unblock_timer_signal();
 }
