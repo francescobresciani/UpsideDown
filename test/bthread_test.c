@@ -10,35 +10,71 @@ void* testRoutine1(void* arg)
 
     volatile int i;
 
-    for(i=0;i<10;i++) {
+    for(i=0;i<200;i++) {
 
-        printf("BThread1, i=%d\n", i);
-        //bthread_yield();
+
+            printf("BThread1, i=%d\n", i);
+            //bthread_yield();
+            bthread_printf("");
+
+        if( i == 100){
+            printf("CANCELLAZIONE DEL THREAD 1");
+            bthread_cancel(1);
+        }
+        bthread_yield();
         bthread_printf("");
     }
 }
 
-void* testRoutine2(void* arg)
-{
+void* testRoutine2(void* arg) {
     volatile int i;
 
-    for(i=0;i<10;i++) {
+    for (i = 0; i < 200; i++) {
 
-        printf("BThread2, i=%d\n", i);
-        //bthread_yield();
-        bthread_printf("");
-    }
+
+
+            printf("BThread1, i=%d\n", i);
+            //bthread_yield();
+            bthread_printf("");
+
+            if (i == 160) {
+                printf("CANCELLAZIONE DEL THREAD 1");
+                bthread_testcancel();
+            }
+            bthread_yield();
+            bthread_printf("");
+        }
+
 }
 
 
-void main(){
+
+
+void testCancellation(){
+
     unsigned long int bid1;
     unsigned long int bid2;
-    bthread_create(&bid1,NULL,testRoutine1,NULL);
 
+    bthread_create(&bid1,NULL,testRoutine1(&bid1),NULL);
+    bthread_create(&bid2,NULL,testRoutine2(&bid2),NULL);
 
-    bthread_create(&bid2,NULL,testRoutine2,NULL);
     bthread_join(bid1,NULL);
     bthread_join(bid2,NULL);
+
+
+}
+
+void main(){
+    /*
+    unsigned long int bid1;
+    unsigned long int bid2;
+
+    bthread_create(&bid1,NULL,testRoutine1,NULL);
+    bthread_create(&bid2,NULL,testRoutine2,NULL);
+
+    bthread_join(bid1,NULL);
+    bthread_join(bid2,NULL);
+     */
+    testCancellation();
 
 }

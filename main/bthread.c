@@ -19,6 +19,7 @@ __bthread_scheduler_private *bthread_get_scheduler() {
 
 int bthread_create(bthread_t *bthread, const bthread_attr_t *attr, void *(*start_routine) (void *), void *arg){
     __bthread_private *  thread = malloc(sizeof(__bthread_private));
+    thread->cancel_req = 0; //Cancellation flag set by zero as default
     thread->body = start_routine;
     thread->arg = arg;
     thread->state = __BTHREAD_UNINITIALIZED;
@@ -95,6 +96,25 @@ static int bthread_reap_if_zombie(bthread_t bthread, void **retval){
     }else{
         return 0;
     }
+
+}
+void bthread_testcancel(void){
+    volatile __bthread_scheduler_private* scheduler = bthread_get_scheduler();
+    __bthread_private * thread = tqueue_get_data(scheduler->current_item);
+    if(thread->cancel_req == 1){
+        bthread_exit(-1);
+    }
+}
+
+//TODO: Recuperiamo il thread relativo con l'id del thread usando tqueue_at_offset
+// speculando che l'offset sia dato dall'id;
+
+int bthread_cancel(bthread_t bthread){
+    volatile __bthread_scheduler_private* scheduler = bthread_get_scheduler();
+    __bthread_private * thread = tqueue_get_data(scheduler->current_item);
+    volatile TQueue th = tqueue_at_offset(scheduler->current_item, bthread - thread->tid);
+    volatile __bthread_private * threadToTerminate = tqueue_get_data(th);
+    threadToTerminate->cancel_req = 1;
 
 }
 

@@ -16,6 +16,8 @@ int bthread_create(bthread_t *bthread, const bthread_attr_t *attr, void *(*start
 int bthread_join(bthread_t bthread, void **retval);
 void bthread_yield();
 void bthread_exit(void *retval);
+int bthread_cancel(bthread_t bthread);
+void bthread_testcancel(void);
 
 
 #endif //SUPSI_SO_18_BTHREAD_H

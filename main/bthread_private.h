@@ -31,6 +31,7 @@ typedef struct {
     bthread_attr_t attr;
     jmp_buf context;
     void* retval;
+    int cancel_req;
 } __bthread_private;
 
 __bthread_scheduler_private* bthread_get_scheduler();
