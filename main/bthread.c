@@ -46,8 +46,7 @@ int bthread_join(bthread_t bthread, void **retval) {
             volatile __bthread_private * thread = tqueue_get_data(scheduler->current_item);
             //thread sleep implementation
             if (thread->state == __BTHREAD_SLEEPING) {
-                printf("Time: %d - %d", thread->wake_up_time, get_current_time_millis());
-                if (thread->wake_up_time == get_current_time_millis()) {
+                if (thread->wake_up_time <= get_current_time_millis()) {
                     thread->state = __BTHREAD_READY;
                 }
             }
@@ -115,7 +114,7 @@ void bthread_sleep (double ms) {
     volatile __bthread_scheduler_private* scheduler = bthread_get_scheduler();
     __bthread_private * thread = tqueue_get_data(scheduler->current_item);
     thread->state = __BTHREAD_SLEEPING;
-    thread->wake_up_time = ms;
+    thread->wake_up_time = ms+get_current_time_millis();
     bthread_yield();
 }
 

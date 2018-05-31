@@ -14,7 +14,7 @@ void* testRoutine1(void* arg)
 
         printf("BThread1, i=%d\n", i);
         //bthread_yield();
-        bthread_sleep(2000);
+        bthread_sleep(2000.0);
         bthread_printf("");
     }
 }
