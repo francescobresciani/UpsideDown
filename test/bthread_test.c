@@ -58,7 +58,7 @@ void* testRoutine3(void* arg) {
 
 
         printf("BThread3, i=%d\n", i);
-
+        bthread_sleep(2000);
         bthread_printf("");
     }
 
@@ -69,7 +69,7 @@ void* testRoutine4(void* arg) {
 
     for (i = 0; i < 10; i++) {
         printf("BThread4, i=%d\n", i);
-        //bthread_yield();
+        bthread_sleep(1000);
         bthread_printf("");
     }
 

@@ -31,6 +31,7 @@ int bthread_create(bthread_t *bthread, const bthread_attr_t *attr, void *(*start
     thread->tid = tqueue_enqueue(&scheduler->queue, thread);
     *bthread = thread->tid;
     scheduler->current_item = scheduler->queue;
+    bthread_setup_timer();
 }
 
 int bthread_join(bthread_t bthread, void **retval) {
@@ -119,13 +120,12 @@ void bthread_testcancel(void){
 //TODO: Recuperiamo il thread relativo con l'id del thread usando tqueue_at_offset
 // speculando che l'offset sia dato dall'id;
 
-int bthread_cancel(bthread_t bthread){
-    volatile __bthread_scheduler_private* scheduler = bthread_get_scheduler();
-    __bthread_private * thread = tqueue_get_data(scheduler->current_item);
+int bthread_cancel(bthread_t bthread) {
+    volatile __bthread_scheduler_private *scheduler = bthread_get_scheduler();
+    __bthread_private *thread = tqueue_get_data(scheduler->current_item);
     volatile TQueue th = tqueue_at_offset(scheduler->current_item, bthread - thread->tid);
-    volatile __bthread_private * threadToTerminate = tqueue_get_data(th);
+    volatile __bthread_private *threadToTerminate = tqueue_get_data(th);
     threadToTerminate->cancel_req = 1;
-
 }
 
 void bthread_cleanup(){
@@ -162,11 +162,17 @@ static void bthread_setup_timer() {
 }
 
 void bthread_block_timer_signal(){
-
+    sigset_t x;
+    sigemptyset(&x);
+    sigaddset(&x, SIGVTALRM);
+    sigprocmask(SIG_BLOCK, &x, NULL);
 }
 
 void bthread_unblock_timer_signal(){
-
+    sigset_t x;
+    sigemptyset(&x);
+    sigaddset(&x, SIGVTALRM);
+    sigprocmask(SIG_UNBLOCK, &x, NULL);
 }
 
 void bthread_printf(const char* format, ...){
