@@ -7,6 +7,7 @@
 #define save_context(CONTEXT) setjmp(CONTEXT)
 #define restore_context(CONTEXT) longjmp(CONTEXT, 1)
 #define CUSHION_SIZE 10000
+#define QUANTUM_USEC 2000
 
 typedef enum { __BTHREAD_EXITED = 0, __BTHREAD_ZOMBIE, __BTHREAD_UNINITIALIZED,
     __BTHREAD_READY, __BTHREAD_BLOCKED, __BTHREAD_SLEEPING } bthread_state;
@@ -42,5 +43,9 @@ static void bthread_initialize_next();
 static int bthread_reap_if_zombie(bthread_t bthread, void **retval);
 
 double get_current_time_millis();
+void bthread_block_timer_signal();
+void bthread_unblock_timer_signal();
+
+static void bthread_setup_timer();
 
 #endif //SUPSI_SO_18_BTHREAD_PRIVATE_H

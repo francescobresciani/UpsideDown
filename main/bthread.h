@@ -8,9 +8,11 @@
 #include "tqueue.h"
 #include "bthread_private.h"
 
+/* Vecchia Macro sostituita dalla Preemption (cap 4.6)
 #define bthread_printf(...)\
 printf(__VA_ARGS__);\
 bthread_yield();
+ */
 
 int bthread_create(bthread_t *bthread, const bthread_attr_t *attr, void *(*start_routine) (void *), void *arg);
 int bthread_join(bthread_t bthread, void **retval);
@@ -19,6 +21,8 @@ void bthread_exit(void *retval);
 int bthread_cancel(bthread_t bthread);
 void bthread_testcancel(void);
 void bthread_sleep(double ms);
+void bthread_printf(const char* format, ...);
+
 
 
 #endif //SUPSI_SO_18_BTHREAD_H
