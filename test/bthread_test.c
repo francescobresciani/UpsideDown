@@ -13,6 +13,9 @@ void* testRoutine1(void* arg)
     for(i=0;i<200;i++) {
 
 
+        printf("BThread1, i=%d\n", i);
+        //bthread_yield();
+        bthread_sleep(2000.0);
             printf("BThread1, i=%d\n", i);
             //bthread_yield();
             bthread_printf("");

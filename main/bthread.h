@@ -18,6 +18,7 @@ void bthread_yield();
 void bthread_exit(void *retval);
 int bthread_cancel(bthread_t bthread);
 void bthread_testcancel(void);
+void bthread_sleep(double ms);
 
 
 #endif //SUPSI_SO_18_BTHREAD_H
