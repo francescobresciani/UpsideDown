@@ -31,10 +31,11 @@ int bthread_create(bthread_t *bthread, const bthread_attr_t *attr, void *(*start
     thread->tid = tqueue_enqueue(&scheduler->queue, thread);
     *bthread = thread->tid;
     scheduler->current_item = scheduler->queue;
-    bthread_setup_timer();
 }
 
 int bthread_join(bthread_t bthread, void **retval) {
+    bthread_block_timer_signal();
+    bthread_setup_timer();
     volatile __bthread_scheduler_private* scheduler = bthread_get_scheduler();
     if (save_context(scheduler->context) == 0) {
         bthread_initialize_next();
@@ -58,15 +59,15 @@ int bthread_join(bthread_t bthread, void **retval) {
 }
 
 void bthread_yield() {
+    bthread_block_timer_signal();
     volatile __bthread_scheduler_private *scheduler = bthread_get_scheduler();
     volatile __bthread_private * thread = tqueue_get_data(scheduler->current_item);
-
-    bthread_setup_timer();
 
     if (!save_context(thread->context)) {
         bthread_initialize_next();
         restore_context(scheduler->context);
     }
+    bthread_unblock_timer_signal();
 }
 
 void bthread_exit(void *retval){
@@ -81,7 +82,9 @@ static void bthread_create_cushion(__bthread_private* t_data){
     char cushion[CUSHION_SIZE];
     cushion[CUSHION_SIZE-1] = cushion[0];
     t_data->state = __BTHREAD_READY;
+    bthread_unblock_timer_signal();
     bthread_exit(t_data->body(t_data->arg));
+
 }
 
 static void bthread_initialize_next(){

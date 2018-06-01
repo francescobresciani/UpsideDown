@@ -4,10 +4,8 @@
 #define restore_context(CONTEXT) siglongjmp(CONTEXT,1)
 
 #include <setjmp.h>
-#define save_context(CONTEXT) setjmp(CONTEXT)
-#define restore_context(CONTEXT) longjmp(CONTEXT, 1)
 #define CUSHION_SIZE 10000
-#define QUANTUM_USEC 2000000
+#define QUANTUM_USEC 20000
 
 typedef enum { __BTHREAD_EXITED = 0, __BTHREAD_ZOMBIE, __BTHREAD_UNINITIALIZED,
     __BTHREAD_READY, __BTHREAD_BLOCKED, __BTHREAD_SLEEPING } bthread_state;
