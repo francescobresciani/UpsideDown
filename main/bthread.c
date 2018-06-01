@@ -122,8 +122,7 @@ void bthread_testcancel(void){
 
 int bthread_cancel(bthread_t bthread) {
     volatile __bthread_scheduler_private *scheduler = bthread_get_scheduler();
-    __bthread_private *thread = tqueue_get_data(scheduler->current_item);
-    volatile TQueue th = tqueue_at_offset(scheduler->current_item, bthread - thread->tid);
+    volatile TQueue th = tqueue_at_offset(scheduler->queue, bthread);
     volatile __bthread_private *threadToTerminate = tqueue_get_data(th);
     threadToTerminate->cancel_req = 1;
 }
