@@ -24,6 +24,7 @@ void bthread_sleep(double ms);
 void bthread_printf(const char* format, ...);
 void bthread_testcancel(void);
 int bthread_cancel(bthread_t bthread);
+void setScheduler(int selectScheduler);
 
 
 #endif //SUPSI_SO_18_BTHREAD_H

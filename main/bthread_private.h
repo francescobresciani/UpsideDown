@@ -14,12 +14,13 @@ typedef unsigned long int bthread_t;
 
 typedef struct {} bthread_attr_t;
 typedef void *(*bthread_routine) (void *);
-
+typedef void (*bthread_scheduling_routine)();
 
 typedef struct {
     TQueue queue;
     TQueue current_item;
     jmp_buf context;
+    bthread_scheduling_routine scheduling_routine;
 } __bthread_scheduler_private;
 
 typedef struct {

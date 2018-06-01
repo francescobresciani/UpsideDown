@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <signal.h>
+#include "scheduler.h"
 
 __bthread_scheduler_private *bthread_get_scheduler() {
     static __bthread_scheduler_private * ourScheduler = NULL;
@@ -16,6 +17,20 @@ __bthread_scheduler_private *bthread_get_scheduler() {
         ((__bthread_scheduler_private*) ourScheduler)->queue = NULL;
     }
     return ourScheduler;
+}
+
+void setScheduler(int selectScheduler){
+    volatile __bthread_scheduler_private* scheduler = bthread_get_scheduler();
+    switch (selectScheduler){
+        case 1:
+            scheduler->scheduling_routine=randomSchedulerRoutine;
+            break;
+        case 2:
+            scheduler->scheduling_routine=prioritySchedulerRoutine;
+            break;
+        default:
+            scheduler->scheduling_routine=NULL;
+    }
 }
 
 int bthread_create(bthread_t *bthread, const bthread_attr_t *attr, void *(*start_routine) (void *), void *arg){
@@ -44,7 +59,13 @@ int bthread_join(bthread_t bthread, void **retval) {
         __bthread_private* tp;
         do {
             if (bthread_reap_if_zombie(bthread, retval)) return 0;
-            scheduler->current_item = tqueue_at_offset(scheduler->current_item, 1);
+
+            if(scheduler->scheduling_routine != NULL){
+                scheduler->scheduling_routine();
+            } else {
+                scheduler->current_item = tqueue_at_offset(scheduler->current_item, 1);
+            }
+
             tp = (__bthread_private*) tqueue_get_data(scheduler->current_item);
             volatile __bthread_private * thread = tqueue_get_data(scheduler->current_item);
             //thread sleep implementation
