@@ -33,6 +33,7 @@ typedef struct {
     void* retval;
     int cancel_req;
     double wake_up_time;
+    unsigned int priority;
 } __bthread_private;
 
 __bthread_scheduler_private* bthread_get_scheduler();

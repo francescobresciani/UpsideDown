@@ -1,6 +1,3 @@
-//
-// Created by Andrea De Carlo on 04.05.18.
-//
 #include "bthread.h"
 #include "bthread_private.h"
 #include <sys/time.h>
@@ -15,30 +12,34 @@ __bthread_scheduler_private *bthread_get_scheduler() {
     if(ourScheduler == NULL){
         ourScheduler = malloc(sizeof(__bthread_scheduler_private));
         ((__bthread_scheduler_private*) ourScheduler)->queue = NULL;
+        ((__bthread_scheduler_private*) ourScheduler)->scheduling_routine = roundRobinSchedulerRoutine;
     }
     return ourScheduler;
 }
 
-void setScheduler(int selectScheduler){
+void setScheduler(scheduler_name selectScheduler){
     volatile __bthread_scheduler_private* scheduler = bthread_get_scheduler();
     switch (selectScheduler){
-        case 1:
-            scheduler->scheduling_routine=randomSchedulerRoutine;
+        case __SCHEDULER_RANDOM:
+            scheduler->scheduling_routine = randomSchedulerRoutine;
             break;
-        case 2:
-            scheduler->scheduling_routine=prioritySchedulerRoutine;
+        case __SCHEDULER_PRIORITY:
+            scheduler->scheduling_routine = prioritySchedulerRoutine;
             break;
+        case __SCHEDULER_ROUNDROBIN:
+            scheduler->scheduling_routine = roundRobinSchedulerRoutine;
         default:
-            scheduler->scheduling_routine=NULL;
+            scheduler->scheduling_routine = roundRobinSchedulerRoutine;
     }
 }
 
-int bthread_create(bthread_t *bthread, const bthread_attr_t *attr, void *(*start_routine) (void *), void *arg){
+int bthread_create(bthread_t *bthread, const bthread_attr_t *attr, void *(*start_routine) (void *), void *arg, unsigned int priority){
     __bthread_private *  thread = malloc(sizeof(__bthread_private));
     thread->cancel_req = 0; //Cancellation flag set by zero as default
     thread->body = start_routine;
     thread->arg = arg;
     thread->state = __BTHREAD_UNINITIALIZED;
+    thread->priority = priority;
     if(attr != NULL){
         thread->attr = *attr;
     }
@@ -60,11 +61,9 @@ int bthread_join(bthread_t bthread, void **retval) {
         do {
             if (bthread_reap_if_zombie(bthread, retval)) return 0;
 
-            if(scheduler->scheduling_routine != NULL){
-                scheduler->scheduling_routine();
-            } else {
-                scheduler->current_item = tqueue_at_offset(scheduler->current_item, 1);
-            }
+            //Avvio l'algoritmo selezionato
+
+            scheduler->scheduling_routine();
 
             tp = (__bthread_private*) tqueue_get_data(scheduler->current_item);
             volatile __bthread_private * thread = tqueue_get_data(scheduler->current_item);
