@@ -14,8 +14,8 @@ int bthread_barrier_init(bthread_barrier_t* b, const bthread_barrierattr_t* attr
 }
 
 int bthread_barrier_wait(bthread_barrier_t* b){
-    TQueue q = bthread_get_scheduler()->current_item;
-    __bthread_private* thread = tqueue_get_data(q);
+    volatile __bthread_scheduler_private *scheduler = bthread_get_scheduler();
+    __bthread_private* thread = tqueue_get_data(scheduler->current_item);
     thread->state=__BTHREAD_BLOCKED;
     tqueue_enqueue(b->waiting_list,thread);
     b->count++;

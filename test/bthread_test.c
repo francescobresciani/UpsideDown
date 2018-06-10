@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <printf.h>
 #include "../main/bthread.h"
+#include "../main/tbarrier.h"
 
 void* testRoutine1(void* arg);
 void* testRoutine2(void* arg);
@@ -89,26 +90,49 @@ void* testRoutine6(void* arg) {
 
 }
 
+void* thread_barrier (void* args, bthread_barrier_t* barrier) {
+    printf("step1");
+    int result = bthread_barrier_wait(&barrier);
+
+    if (result != 0) {
+        perror("Error!\n");
+        exit(-1);
+    }
+
+    printf("step2");
+
+}
+
 
 void main(){
     //seleziono il tipo di scheduler da usare, OPZIONALE (se non impostato = ROUND ROBIN)
     setScheduler(__SCHEDULER_PRIORITY);
 
+    //test con barriera
+    bthread_barrier_t barrier;
+    bthread_barrier_init(&barrier,NULL,2);
+
     unsigned long int bid1;
     unsigned long int bid2;
     unsigned long int bid3;
     unsigned long int bid4;
-    //printf("bid1 = %d",&bid2);
+
+    /* Test senza barrier
     bthread_create(&bid1,NULL,testRoutine3,NULL, 2);
     bthread_create(&bid2,NULL,testRoutine4,NULL, 4);
     bthread_create(&bid3,NULL,testRoutine5,NULL, 3);
     bthread_create(&bid4,NULL,testRoutine6,NULL, 1);
+     */
 
-    bthread_joiwn(bid1,NULL);
+    bthread_create(&bid1,NULL,thread_barrier(NULL,&barrier),NULL, 2);
+    bthread_create(&bid2,NULL,thread_barrier(NULL,&barrier),NULL, 4);
+    bthread_create(&bid3,NULL,thread_barrier(NULL,&barrier),NULL, 3);
+    bthread_create(&bid4,NULL,thread_barrier(NULL,&barrier),NULL, 1);
+
+    bthread_join(bid1,NULL);
     bthread_join(bid2,NULL);
     bthread_join(bid3,NULL);
     bthread_join(bid4,NULL);
 
-    //testCancellation();
 
 }

@@ -32,6 +32,7 @@ int main(){
 
 void tbarrier_test() {
 //    inizializza
+    setScheduler(__SCHEDULER_PRIORITY);
 
     bthread_barrier_t barrier;
     bthread_barrier_init(&barrier,NULL,2);
