@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <printf.h>
 #include "../main/bthread.h"
 
 void* testRoutine1(void* arg);
@@ -103,7 +104,7 @@ void main(){
     bthread_create(&bid3,NULL,testRoutine5,NULL, 3);
     bthread_create(&bid4,NULL,testRoutine6,NULL, 1);
 
-    bthread_join(bid1,NULL);
+    bthread_joiwn(bid1,NULL);
     bthread_join(bid2,NULL);
     bthread_join(bid3,NULL);
     bthread_join(bid4,NULL);
