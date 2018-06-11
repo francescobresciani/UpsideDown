@@ -7,14 +7,14 @@
 //attr is ignored
 int bthread_barrier_init(bthread_barrier_t* b, const bthread_barrierattr_t* attr, unsigned count){
     assert(b!=NULL);
-    //b->waiting_list = (TQueue*) malloc(sizeof(TQueue));
     b->waiting_list = NULL;
 
     b->count=0;
     b->barrier_size=count;
     return 0;
 }
-
+// Setta ad ogni processo il suo stato come BLOCKED e lo inserisce nella sua coda. Quando ha raggiunto la dimensione
+// totale viene svuotata mettendo tutti i thread al suo interno come READY
 int bthread_barrier_wait(bthread_barrier_t* b) {
     bthread_block_timer_signal();
     __bthread_scheduler_private *scheduler = bthread_get_scheduler();
@@ -45,6 +45,4 @@ int bthread_barrier_destroy(bthread_barrier_t* b){
     assert(tqueue_size(b->waiting_list) == 0);
     free(b);
     return 0;
-
-
 }

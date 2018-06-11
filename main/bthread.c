@@ -7,6 +7,7 @@
 #include <signal.h>
 #include "scheduler.h"
 
+// funzione che richiama lo scheduler per tutte le operazioni basilari
 __bthread_scheduler_private *bthread_get_scheduler() {
     static __bthread_scheduler_private * ourScheduler = NULL;
     if(ourScheduler == NULL){
@@ -17,6 +18,7 @@ __bthread_scheduler_private *bthread_get_scheduler() {
     return ourScheduler;
 }
 
+// setta la routine dello scheduler: roundrobin(default), random, priority
 void setScheduler(scheduler_name selectScheduler){
     volatile __bthread_scheduler_private* scheduler = bthread_get_scheduler();
     switch (selectScheduler){
@@ -33,6 +35,7 @@ void setScheduler(scheduler_name selectScheduler){
     }
 }
 
+// istanzia il thread, modificato rispetto all'originale per aggiunta priorità
 int bthread_create(bthread_t *bthread, const bthread_attr_t *attr, void *(*start_routine) (void *), void *arg, unsigned int priority){
     __bthread_private *  thread = (__bthread_private* )malloc(sizeof(__bthread_private));
     thread->cancel_req = 0; //Cancellation flag set by zero as default
@@ -49,6 +52,7 @@ int bthread_create(bthread_t *bthread, const bthread_attr_t *attr, void *(*start
     scheduler->current_item = scheduler->queue;
 }
 
+// accoda il thread nella queue dello scheduler
 int bthread_join(bthread_t bthread, void **retval) {
     bthread_block_timer_signal();
     bthread_setup_timer();
@@ -78,6 +82,7 @@ int bthread_join(bthread_t bthread, void **retval) {
     }
 }
 
+// Yield del thread corrente, praticamente il thread salva il suo stato e passa il context al prossimo thread in coda.
 void bthread_yield() {
     bthread_block_timer_signal();
     volatile __bthread_scheduler_private *scheduler = bthread_get_scheduler();
@@ -90,6 +95,7 @@ void bthread_yield() {
     bthread_unblock_timer_signal();
 }
 
+// elimina il thread, poi passa a yield per passare al prossimo thread in coda
 void bthread_exit(void *retval){
     volatile __bthread_scheduler_private* scheduler = bthread_get_scheduler();
     __bthread_private * thread = tqueue_get_data(scheduler->current_item);
@@ -98,15 +104,17 @@ void bthread_exit(void *retval){
     bthread_yield();
 }
 
+// crea o aggiunge un cushion e poi si pone alla fine della
 static void bthread_create_cushion(__bthread_private* t_data){
     char cushion[CUSHION_SIZE];
     cushion[CUSHION_SIZE-1] = cushion[0];
     t_data->state = __BTHREAD_READY;
-    bthread_unblock_timer_signal();
+    //bthread_unblock_timer_signal();  commentato perchè nessuno sa come mai era qui
     bthread_exit(t_data->body(t_data->arg));
 
 }
 
+// chiama l'inizializzazione del prossimo processo nella coda, usato dallo yield.
 static void bthread_initialize_next(){
     volatile __bthread_scheduler_private* scheduler = bthread_get_scheduler();
     volatile TQueue next = tqueue_at_offset(scheduler->current_item, 1);
@@ -118,6 +126,7 @@ static void bthread_initialize_next(){
     }
 }
 
+// se thread è in stato zombie lo setta a exited
 static int bthread_reap_if_zombie(bthread_t bthread, void **retval){
     volatile __bthread_scheduler_private* scheduler = bthread_get_scheduler();
     __bthread_private * thread = tqueue_get_data(scheduler->current_item);
@@ -132,6 +141,8 @@ static int bthread_reap_if_zombie(bthread_t bthread, void **retval){
     }
 
 }
+
+// Controlla se il thread attuale può terminare. Check se cancel_req a 1, se si esce
 void bthread_testcancel(void){
     volatile __bthread_scheduler_private* scheduler = bthread_get_scheduler();
     __bthread_private * thread = tqueue_get_data(scheduler->current_item);
@@ -140,9 +151,8 @@ void bthread_testcancel(void){
     }
 }
 
-//TODO: Recuperiamo il thread relativo con l'id del thread usando tqueue_at_offset
 // speculando che l'offset sia dato dall'id;
-
+// Il thread chiede ad un altro thread di uscire.
 int bthread_cancel(bthread_t bthread) {
     volatile __bthread_scheduler_private *scheduler = bthread_get_scheduler();
     volatile TQueue th = tqueue_at_offset(scheduler->queue, bthread);
@@ -154,6 +164,7 @@ void bthread_cleanup(){
 
 }
 
+// Mette il thread in pausa.
 void bthread_sleep (double ms) {
     volatile __bthread_scheduler_private* scheduler = bthread_get_scheduler();
     __bthread_private * thread = tqueue_get_data(scheduler->current_item);
@@ -162,15 +173,16 @@ void bthread_sleep (double ms) {
     bthread_yield();
 }
 
+// prende il timestamp
 double get_current_time_millis() {
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
 }
 
+// inizializza il timer per lo scheduler
 static void bthread_setup_timer() {
     static bool initialized = false;
-
     if (!initialized) {
         signal(SIGVTALRM, (void (*)()) bthread_yield);
         struct itimerval time;
@@ -183,6 +195,7 @@ static void bthread_setup_timer() {
     }
 }
 
+// Lock atomico bloccando il segnale.
 void bthread_block_timer_signal(){
     sigset_t x;
     sigemptyset(&x);
@@ -190,6 +203,7 @@ void bthread_block_timer_signal(){
     sigprocmask(SIG_BLOCK, &x, NULL);
 }
 
+// Unlock del segnale
 void bthread_unblock_timer_signal(){
     sigset_t x;
     sigemptyset(&x);
@@ -197,6 +211,7 @@ void bthread_unblock_timer_signal(){
     sigprocmask(SIG_UNBLOCK, &x, NULL);
 }
 
+// Funzione che sostituisce la macro iniziale per la chimamta dello yield.
 void bthread_printf(const char* format, ...){
     bthread_block_timer_signal();
     va_list args;

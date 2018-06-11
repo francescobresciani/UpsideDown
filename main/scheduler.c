@@ -2,12 +2,13 @@
 #include "bthread.h"
 #include "bthread_private.h"
 
-
+// Routine round robin
 void roundRobinSchedulerRoutine(){
     volatile __bthread_scheduler_private* scheduler = bthread_get_scheduler();
     scheduler->current_item = tqueue_at_offset(scheduler->current_item, 1);
 }
 
+// routine random, sceglie a caso dalla coda
 void randomSchedulerRoutine(){
     volatile __bthread_scheduler_private* scheduler = bthread_get_scheduler();
     volatile __bthread_private * thread;
@@ -23,6 +24,7 @@ void randomSchedulerRoutine(){
     scheduler->current_item = queue;
 }
 
+// Usa il valore id di priorità del thread per scegliere il prossimo da eseguire.
 void prioritySchedulerRoutine(){
     volatile __bthread_scheduler_private* scheduler = bthread_get_scheduler();
     volatile __bthread_private * thread;
