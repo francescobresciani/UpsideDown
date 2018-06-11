@@ -90,7 +90,7 @@ bthread_cond_signal(&space_in_stock);
 
 
 int main(int argc, char *argv[]) {
- /*   bthread_mutex_init(&stock_mutex, NULL);
+    bthread_mutex_init(&stock_mutex, NULL);
     bthread_cond_init(&items_in_stock, NULL);
     bthread_cond_init(&space_in_stock, NULL);
     volatile bthread_t producer1, consumer1, consumer2;
@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
     bthread_cond_destroy(&items_in_stock);
     bthread_cond_destroy(&space_in_stock);
     bthread_mutex_destroy(&stock_mutex);
-    printf("Exiting main\n");*/
+    printf("Exiting main\n");
     return 0;
 
 }
