@@ -7,6 +7,7 @@
 #include "tmutex.h"
 #include "bthread_private.h"
 
+// inizializzazione
 int bthread_cond_init(bthread_cond_t* c, const bthread_condattr_t *attr){
     //attr è ignorato
     if(c != NULL){
@@ -18,12 +19,14 @@ int bthread_cond_init(bthread_cond_t* c, const bthread_condattr_t *attr){
     }
 }
 
+// Libera l'allocazione di memoria della condizione di bthread_cond_t
 int bthread_cond_destroy(bthread_cond_t* c){
     assert(tqueue_size(c->waiting_list) == 0);
     free(c);
     return 0;
 }
 
+// Funzione usata per bloccare con una condizione variabile un processo e aspettare una determinata condizione di sblocco.
 int bthread_cond_wait(bthread_cond_t* c, bthread_mutex_t* mutex){
     bthread_block_timer_signal();
 
@@ -52,6 +55,7 @@ int bthread_cond_wait(bthread_cond_t* c, bthread_mutex_t* mutex){
     bthread_unblock_timer_signal();
 }
 
+// Funzione per notify ad un thread
 int bthread_cond_signal(bthread_cond_t* c){
     bthread_block_timer_signal();
 
@@ -63,6 +67,7 @@ int bthread_cond_signal(bthread_cond_t* c){
     bthread_unblock_timer_signal();
 }
 
+// Funzione per notify-all su tutti i threads
 int bthread_cond_broadcast(bthread_cond_t* c){
     bthread_block_timer_signal();
 
