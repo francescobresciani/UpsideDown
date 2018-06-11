@@ -1,13 +1,11 @@
 //
 // Created by attilio on 10/06/18.
 //
-#include <assert.h>
 #include "tsemaphore.h"
 #include "bthread.h"
 
 
 int bthread_sem_init(bthread_sem_t* s, int pshared, int value){
-
     if (s == NULL){
         s= (bthread_sem_t *) malloc(sizeof(bthread_sem_t));
     }
