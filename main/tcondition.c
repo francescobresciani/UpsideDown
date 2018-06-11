@@ -7,6 +7,7 @@
 int bthread_cond_init(bthread_cond_t* c, const bthread_condattr_t *attr){
     //attr è ignorato
 
+    if(c==NULL)
     c = (bthread_cond_t*) malloc(sizeof(bthread_cond_t));
 
     return 0;
@@ -52,6 +53,10 @@ int bthread_cond_wait(bthread_cond_t* c, bthread_mutex_t* mutex){
 
   __bthread_scheduler_private* scheduler = bthread_get_scheduler();
   __bthread_private* current_item = tqueue_get_data(scheduler->current_item);
+
+
+
+
 }
 
 int bthread_cond_signal(bthread_cond_t* c){
