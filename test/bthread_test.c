@@ -148,6 +148,6 @@ void main(){
     bthread_join(bid4,NULL);
 
 
-    bthread_barrier_destroy(&barrier);
+    //bthread_barrier_destroy(&barrier);
 
 }
