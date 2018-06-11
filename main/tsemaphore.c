@@ -6,29 +6,32 @@
 #include "bthread.h"
 
 
-int bthread_sem_init(bthread_sem_t* m, int pshared, int value){
+int bthread_sem_init(bthread_sem_t* s, int pshared, int value){
 
-    if (m == NULL){
-        m= (bthread_sem_t *) malloc(sizeof(bthread_sem_t));
+    if (s == NULL){
+        s= (bthread_sem_t *) malloc(sizeof(bthread_sem_t));
     }
-    m->value= value;
-    m->waiting_list=NULL;
+    s->value= value;
+    s->waiting_list=NULL;
     return 0;
 }
 
-int bthread_sem_destroy(bthread_sem_t* m){
-    assert(tqueue_size(m->waiting_list)==0);
-    free(m);
+int bthread_sem_destroy(bthread_sem_t* s){
+    if(tqueue_size(s->waiting_list)==0){
+        free(s);
+    }
     return 0;
 }
-int bthread_sem_wait(bthread_sem_t* m){
+int bthread_sem_wait(bthread_sem_t* s){
     bthread_block_timer_signal();
-    m->value--;
+    s->value--;
     bthread_unblock_timer_signal();
+    return 0;
 }
-int bthread_sem_post(bthread_sem_t* m){
+int bthread_sem_post(bthread_sem_t* s){
     bthread_block_timer_signal();
-    m->value++;
+    s->value++;
     bthread_unblock_timer_signal();
+    return 0;
 }
 

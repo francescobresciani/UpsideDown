@@ -7,11 +7,11 @@ typedef struct {
 } bthread_sem_t;
 
 // pshared is ignored, defined for compatibility with pthread
-int bthread_sem_init(bthread_sem_t* m, int pshared, int value);
+int bthread_sem_init(bthread_sem_t* s, int pshared, int value);
 
-int bthread_sem_destroy(bthread_sem_t* m);
-int bthread_sem_wait(bthread_sem_t* m);
-int bthread_sem_post(bthread_sem_t* m);
+int bthread_sem_destroy(bthread_sem_t* s);
+int bthread_sem_wait(bthread_sem_t* s);
+int bthread_sem_post(bthread_sem_t* s);
 #define bthread_sem_up(s) \
  bthread_sem_post(s);
 
