@@ -20,12 +20,14 @@ int bthread_sem_destroy(bthread_sem_t* s){
     }
     return 0;
 }
+
 int bthread_sem_wait(bthread_sem_t* s){
     bthread_block_timer_signal();
     s->value--;
     bthread_unblock_timer_signal();
     return 0;
 }
+
 int bthread_sem_post(bthread_sem_t* s){
     bthread_block_timer_signal();
     s->value++;

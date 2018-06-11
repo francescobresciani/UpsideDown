@@ -110,7 +110,7 @@ void* thread_barrier (void* args) {
 
 
 
-void main(){
+void mainb(){
     //seleziono il tipo di scheduler da usare, OPZIONALE (se non impostato = ROUND ROBIN)
     setScheduler(__SCHEDULER_ROUNDROBIN);
 
