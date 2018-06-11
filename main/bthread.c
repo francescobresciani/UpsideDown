@@ -34,7 +34,7 @@ void setScheduler(scheduler_name selectScheduler){
 }
 
 int bthread_create(bthread_t *bthread, const bthread_attr_t *attr, void *(*start_routine) (void *), void *arg, unsigned int priority){
-    __bthread_private *  thread = malloc(sizeof(__bthread_private));
+    __bthread_private *  thread = (__bthread_private* )malloc(sizeof(__bthread_private));
     thread->cancel_req = 0; //Cancellation flag set by zero as default
     thread->body = start_routine;
     thread->arg = arg;
@@ -61,9 +61,9 @@ int bthread_join(bthread_t bthread, void **retval) {
         do {
             if (bthread_reap_if_zombie(bthread, retval)) return 0;
 
-            //Avvio l'algoritmo selezionato
-
             scheduler->scheduling_routine();
+
+
 
             tp = (__bthread_private*) tqueue_get_data(scheduler->current_item);
             volatile __bthread_private * thread = tqueue_get_data(scheduler->current_item);
