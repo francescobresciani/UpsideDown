@@ -22,7 +22,7 @@ int bthread_cond_init(bthread_cond_t* c, const bthread_condattr_t *attr){
 // Libera l'allocazione di memoria della condizione di bthread_cond_t
 int bthread_cond_destroy(bthread_cond_t* c){
     assert(tqueue_size(c->waiting_list) == 0);
-    free(c);
+    free(c->waiting_list);
     return 0;
 }
 
