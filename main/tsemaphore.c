@@ -17,7 +17,7 @@ int bthread_sem_init(bthread_sem_t* s, int pshared, int value){
 //Libera la memoria allocata dal semaforo
 int bthread_sem_destroy(bthread_sem_t* s){
     if(tqueue_size(s->waiting_list)==0){
-        free(s);
+        free(s->waiting_list);
     }
     return 0;
 }

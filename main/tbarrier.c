@@ -43,6 +43,6 @@ int bthread_barrier_wait(bthread_barrier_t* b) {
 //TODO: Chiedere a Brocco perché viene generato un SIGABRT signal durante il free()....
 int bthread_barrier_destroy(bthread_barrier_t* b){
     assert(tqueue_size(b->waiting_list) == 0);
-    free(b);
+    free(b->waiting_list);
     return 0;
 }
