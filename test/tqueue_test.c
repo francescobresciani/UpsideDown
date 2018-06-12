@@ -56,8 +56,8 @@ void yield_test(){
 }
 
 
-/*int main(){
+int main(){
     tqueue_size_and_enqueue_test();
     tqueue_pop_test();
     tqueue_at_offset_and_t_queue_at_offset_test();
-}*/
+}
