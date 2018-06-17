@@ -29,10 +29,10 @@ void main(){
     unsigned long int bid3;
     unsigned long int bid4;
 
-    bthread_create(&bid1,NULL,thread_barrier,NULL, 2);
-    bthread_create(&bid2,NULL,thread_barrier,NULL, 4);
-    bthread_create(&bid3,NULL,thread_barrier,NULL, 3);
-    bthread_create(&bid4,NULL,thread_barrier,NULL, 1);
+    bthread_create(&bid1,NULL,routine_with_barrier,NULL, 2);
+    bthread_create(&bid2,NULL,routine_with_barrier,NULL, 4);
+    bthread_create(&bid3,NULL,routine_with_barrier,NULL, 3);
+    bthread_create(&bid4,NULL,routine_with_barrier,NULL, 1);
 
 
     bthread_join(bid1,NULL);
