@@ -18,72 +18,72 @@ bthread_cond_t space_in_stock;
 void* producer(void* arg)
 {
 
-for(;;) {
+    for(;;) {
 
-bthread_mutex_lock(&stock_mutex);
+        bthread_mutex_lock(&stock_mutex);
 
-while (stock == N) {
+        while (stock == N) {
 
-bthread_cond_wait(&space_in_stock, &stock_mutex);
+            bthread_cond_wait(&space_in_stock, &stock_mutex);
 
-}
+        }
 
 
-if (stock < N) {
+        if (stock < N) {
 
 /* Produce an item */
 
-stock = stock + 1;
+            stock = stock + 1;
 
-bthread_printf("Producer: now there are %d items\n", stock);
+            bthread_printf("Producer: now there are %d items\n", stock);
 
-} else {
+        } else {
 
-bthread_printf("Producer: stock is full\n");
+            bthread_printf("Producer: stock is full\n");
 
+        }
+
+        bthread_mutex_unlock(&stock_mutex);
+
+        bthread_cond_signal(&items_in_stock);
+
+    }
 }
 
-bthread_mutex_unlock(&stock_mutex);
-
-bthread_cond_signal(&items_in_stock);
-
-}
- }
-
- void* consumer(void* arg)
+void* consumer(void* arg)
 {
 
-for(;;) {
+    for(;;) {
 
-bthread_mutex_lock(&stock_mutex);
-
-
-while (stock == 0) {
-
-bthread_cond_wait(&items_in_stock, &stock_mutex);
-
-}
+        bthread_mutex_lock(&stock_mutex);
 
 
-if (stock > 0) {
+        while (stock == 0) {
+
+            bthread_cond_wait(&items_in_stock, &stock_mutex);
+
+        }
+
+
+        if (stock > 0) {
 
 /* Consume an item */
 
-stock = stock - 1;
+            stock = stock - 1;
 
-bthread_printf("Consumer: now there are %d items\n", stock);
+            bthread_printf("Consumer: now there are %d items\n", stock);
 
-} else {
+        } else {
 
-bthread_printf("Consumer: stock is empty\n");
+            bthread_printf("Consumer: stock is empty\n");
 
-}
+        }
 
-bthread_mutex_unlock(&stock_mutex);
+        bthread_mutex_unlock(&stock_mutex);
 
-bthread_cond_signal(&space_in_stock);
+        bthread_cond_signal(&space_in_stock);
 
-}
+    }
 
 }
 

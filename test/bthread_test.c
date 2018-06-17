@@ -47,7 +47,8 @@ void* testRoutine4(void *arg) {
 
 void main(){
     //seleziono il tipo di scheduler da usare, OPZIONALE (se non impostato = ROUND ROBIN)
-    setScheduler(__SCHEDULER_ROUNDROBIN); // altre possibilità __SCHEDULER_RANDOM , __SCHEDULER_PRIORITY , __SCHEDULER_ROUNDROBIN
+    //altre possibilità: __SCHEDULER_RANDOM , __SCHEDULER_PRIORITY , __SCHEDULER_ROUNDROBIN
+    setScheduler(__SCHEDULER_ROUNDROBIN);
 
     unsigned long int bid1;
     unsigned long int bid2;
