@@ -14,7 +14,6 @@ void* routine_with_barrier(void *args) {
         printf("step2\n");
         bthread_sleep(2000);
     }
-
 }
 
 
@@ -34,7 +33,6 @@ void main(){
     bthread_create(&bid2,NULL,thread_barrier,NULL, 4);
     bthread_create(&bid3,NULL,thread_barrier,NULL, 3);
     bthread_create(&bid4,NULL,thread_barrier,NULL, 1);
-
 
 
     bthread_join(bid1,NULL);
