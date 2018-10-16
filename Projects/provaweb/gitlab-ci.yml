@@ -1,0 +1,23 @@
+variables:
+  WAR_NAME: '${CI_PROJECT_NAME}.war'
+  APP_NAME: '${CI_PROJECT_NAME}'
+
+maven-build:
+  stage: build
+  script: "mvn package"
+  artifacts:
+    paths:
+      - target/*.war
+  only:
+  - master
+
+app-deploy:
+  stage: deploy
+  script:
+  - cp target/*.war /opt/apache-tomee-plus-7.0.2/webapps/$WAR_NAME
+  - echo http://isin03.dti.supsi.ch:9090/$APP_NAME
+  environment:
+    name: staging
+    url: http://isin03.dti.supsi.ch:9090/${CI_PROJECT_NAME}
+  only:
+  - master
